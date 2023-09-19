@@ -13,7 +13,7 @@ const blogSchema = new mongoose.Schema({
 const Blog = mongoose.model("Blog", blogSchema);
 
 const mongoUrl =
-  "mongodb+srv://giuli:Castrezzato82@part4.b1jmvev.mongodb.net/bloglist?retryWrites=true&w=majority";
+  "mongodb+srv://giuli:{password}@part4.b1jmvev.mongodb.net/bloglist?retryWrites=true&w=majority";
 mongoose
   .connect(mongoUrl, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
