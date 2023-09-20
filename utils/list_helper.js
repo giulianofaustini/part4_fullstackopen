@@ -1,3 +1,4 @@
+const blog = require("../models/blog");
 
 const dummy = (blogs) => {
     
@@ -20,10 +21,39 @@ const dummy = (blogs) => {
     }
     return favorite
   }
+
+  const mostBlogs = (blogs) => {
+    if (blogs.length === 0) {
+        return null
+    }
+    const authorCount =  {}
+    
+    for (const blog of blogs) {
+        if(authorCount[blog.author]) {
+            authorCount[blog.author] ++
+        } else {
+        authorCount[blog.author] = 1
+    }
+  }
+let topAuthor = null
+let maxBlogs = 0
+
+for (const author in authorCount)
+if (authorCount[author] > maxBlogs) {
+ topAuthor = author
+ maxBlogs = authorCount[author]
+}
+
+return {
+    author: topAuthor,
+    blogs: maxBlogs,
+  };
+};
   
   
   module.exports = {
     dummy,
     totalLikes,
     favoriteBlog,
+    mostBlogs,
   };
