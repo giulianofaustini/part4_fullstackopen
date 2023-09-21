@@ -63,6 +63,7 @@ test('A valid blog can be added to the list in the database', async () => {
   expect(titles).toContain('A third test blog is added?');
 });
 
+
 test('A blog with 0 likes property receives the likes default to 0', async () => {
   const newBlog = {
     title: "A fourth test with 0 likes.",
@@ -74,8 +75,6 @@ test('A blog with 0 likes property receives the likes default to 0', async () =>
     .send(newBlog)
     .expect(201)
     .expect('Content-Type', /application\/json/);
-
-  
   const blogsAtEnd = await helper.blogsInDb();
   expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length + 1); 
   const { likes } = blogsAtEnd[blogsAtEnd.length - 1]; 
@@ -86,7 +85,6 @@ test('A blog with 0 likes property receives the likes default to 0', async () =>
 
 test('A blog without title or url is not added and 400 is responded' , async() => {
   const newBlog = {
-
 
     likes: 45
   };
@@ -99,7 +97,20 @@ test('A blog without title or url is not added and 400 is responded' , async() =
   })
 
 
-
+  test('a blog can be deleted', async () => {
+    const blogsAtStart = await helper.blogsInDb()
+    if (blogsAtStart.length === 0) {
+      return;
+    }
+    const blogToDelete = blogsAtStart[0]
+    await api
+      .delete(`/api/blogs/${blogToDelete.id}`)
+      .expect(204)
+    const blogsAtEnd = await helper.blogsInDb()
+    expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length - 1)
+    const titles = blogsAtEnd.map(r => r.title)
+    expect(titles).not.toContain(blogToDelete.title)
+  })
 
   
 
