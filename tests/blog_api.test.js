@@ -18,7 +18,15 @@ test('there are seven blogs', async () => {
   const response = await api.get('/api/blogs')
   expect(response.body).toHaveLength(2)
   console.log(response.body)
+})
 
+test('The unique identifier property of the blog posts is named id', async () => {
+  const response = await api.get('/api/blogs')
+  const blogName = response.body
+  for (const blog of blogName) {
+    expect(blog.id).toBeDefined()
+    console.log(blog.id)
+  }
 })
 
 afterAll(async () => {
