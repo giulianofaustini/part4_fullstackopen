@@ -17,7 +17,6 @@ const dummy = (blogs) => {
     for (const blog of blogs) {
         if(blog.likes > favorite.likes)
         favorite = blog
-        console.log(favorite)
     }
     return favorite
   }
