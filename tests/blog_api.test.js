@@ -4,7 +4,7 @@
 const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
-
+const Blog = require("../models/blog");
 const api = supertest(app)
 
 const initialBlogs = [
@@ -24,6 +24,14 @@ const initialBlogs = [
   }
 ]
 
+beforeEach(async () => {
+  await Blog.deleteMany({})
+  let blogObject = new Blog(initialBlogs[0])
+  await blogObject.save()
+  blogObject = new Blog(initialBlogs[1])
+  await blogObject.save()
+})
+
 test('Blogs are returned as json', async () => {
   await api
     .get('/api/blogs')
@@ -31,7 +39,7 @@ test('Blogs are returned as json', async () => {
     .expect('Content-Type', /application\/json/)
 })
 
-test('there are seven blogs', async () => {
+test('there are ? blogs', async () => {
   const response = await api.get('/api/blogs')
   expect(response.body).toHaveLength(2)
   console.log(response.body)
@@ -64,6 +72,22 @@ const titles = response.body.map(r => r.title)
 expect(response.body).toHaveLength(initialBlogs.length + 1)
 expect(titles).toContain('A third test blog is add?')
 })
+
+
+test('A blog with likes property receives the likes to default O' , async() => {
+  const newBlog = {
+    title: "A fourth test with 0 likes.",
+    author: "notMe",
+    url: "www.fourthtestblog.com",
+  };
+ const response = await api
+  .post('/api/blogs')
+  .send(newBlog)
+  .expect(201)
+  .expect('Content-Type', /application\/json/)
+   const {likes} = response.body
+  expect(likes).toBe(0)
+  })
 
 afterAll(async () => {
   await mongoose.connection.close()
