@@ -93,4 +93,24 @@ afterAll(async () => {
   await mongoose.connection.close()
 })
 
+test('A blog without title or url is not added and 400 is responded' , async() => {
+  const newBlog = {
+
+    url: "www.fourthtestblog.com",
+    likes: 45
+  };
+ const response = await api
+  .post('/api/blogs')
+  .send(newBlog)
+  .expect(400)
+  .expect('Content-Type', /application\/json/)
+  expect(response.body.error).toBe("Title and URL are required")
+  })
+
+afterAll(async () => {
+  await mongoose.connection.close()
+})
+
+
+
 
