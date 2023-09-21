@@ -112,7 +112,29 @@ test('A blog without title or url is not added and 400 is responded' , async() =
     expect(titles).not.toContain(blogToDelete.title)
   })
 
+
+  test('updating a blog post', async () => {
+    const updatedBlogData = {
+      title: 'Updated Title',
+      author: 'Updated Author',
+      url: 'https://updated-blog-url.com',
+      likes: 99,
+    };
   
+    const blogsAtStart = await helper.blogsInDb();
+    const blogToUpdate = blogsAtStart[0];
+  
+    const response = await api
+      .put(`/api/blogs/${blogToUpdate.id}`)
+      .send(updatedBlogData)
+      .expect(200)
+      .expect('Content-Type', /application\/json/);
+  
+    expect(response.body.title).toBe(updatedBlogData.title);
+    expect(response.body.author).toBe(updatedBlogData.author);
+    expect(response.body.url).toBe(updatedBlogData.url);
+    expect(response.body.likes).toBe(updatedBlogData.likes);
+  });
 
 
 
