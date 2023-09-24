@@ -10,10 +10,21 @@
 # }
 
 
-POST  http://localhost:3003/api/login
+POST http://localhost:3003/api/users
 Content-Type: application/json
 
 {
-    "username": "root",
-    "password": "salainen"
+  "username": "Super Mario",
+  "name": "Bross",
+  "password": "salainen"
 }
+
+
+
+# POST  http://localhost:3003/api/login
+# Content-Type: application/json
+
+# {
+#     "username": "root",
+#     "password": "salainen"
+# }
