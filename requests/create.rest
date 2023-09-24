@@ -1,12 +1,19 @@
-POST  http://localhost:3003/api/blogs
+# POST  http://localhost:3003/api/blogs
+# Content-Type: application/json
+
+# {
+# "title": "The popoapooappoaapiaipos blog in the list picking a random username and name",
+# "author": "TryMe",
+# "url": "www.8blog.com",
+# "likes": 2982829387393
+
+# }
+
+
+POST  http://localhost:3003/api/login
 Content-Type: application/json
 
 {
-"title": "The popoapooappoaapiaipos blog in the list picking a random username and name",
-"author": "TryMe",
-"url": "www.8blog.com",
-"likes": 2982829387393
-
+    "username": "root",
+    "password": "salainen"
 }
-
-
