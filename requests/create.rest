@@ -1,23 +1,24 @@
-# POST  http://localhost:3003/api/blogs
+POST  http://localhost:3003/api/blogs
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlN1cGVyIE1hcmlvIiwiaWQiOiI2NTBmZDVlMGQyOGY3NDJiODAzODZiNmEiLCJpYXQiOjE2OTU1MzY3NjZ9.2s8rtUzkm-LJPTPj2R7COrkkRTHXdPDE1cxe9bcjFV4
+
+{
+"title": "The blog with TOKEN",
+"author": "SUPER IO",
+"url": "www.TOEKN.com",
+"likes": 12
+
+}
+
+
+# POST http://localhost:3003/api/users
 # Content-Type: application/json
 
 # {
-# "title": "The popoapooappoaapiaipos blog in the list picking a random username and name",
-# "author": "TryMe",
-# "url": "www.8blog.com",
-# "likes": 2982829387393
-
+#   "username": "Super Mario",
+#   "name": "Bross",
+#   "password": "salainen"
 # }
-
-
-POST http://localhost:3003/api/users
-Content-Type: application/json
-
-{
-  "username": "Super Mario",
-  "name": "Bross",
-  "password": "salainen"
-}
 
 
 
@@ -25,6 +26,6 @@ Content-Type: application/json
 # Content-Type: application/json
 
 # {
-#     "username": "root",
+#     "username": "Super Mario",
 #     "password": "salainen"
 # }

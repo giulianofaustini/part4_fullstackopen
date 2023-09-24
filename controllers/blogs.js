@@ -3,6 +3,8 @@ const Blog = require("../models/blog");
 const usersRouter = require("../controllers/users");
 const User = require("../models/user");
 const { usersInDb } = require("../tests/test_helper");
+const jwt = require('jsonwebtoken')
+
 
 usersRouter.get("/", async (request, response) => {
   const users = await User.find({});
@@ -21,39 +23,50 @@ blogsRouter.get("/", async (request, response) => {
   }
 });
 
+const getTokenFrom = request => {
+  const authorization = request.get('authorization')
+  if (authorization && authorization.startsWith('Bearer ')) {
+    return authorization.replace('Bearer ', '')
+  }
+  return null
+}
+
 blogsRouter.post("/", async (request, response, next) => {
   const { body } = request;
   console.log("Received POST request with body:", body);
-
+  
+ 
   if (!body.title || !body.url) {
     return response.status(400).json({ error: "Title and URL are required" });
   }
   if (!body.likes) {
     body.likes = 0;
   }
-
   try {
-    const users = await User.findOne({});
+    const decodedToken = jwt.verify(getTokenFrom(request), process.env.SECRET)
+    const user = await User.findById(decodedToken.id)
+    
 
-    if (!users || users.length === 0) {
+    if (!user || user.length === 0) {
       return response
         .status(404)
         .json({ error: "No users found in the database" });
     }
+    if (!decodedToken.id) {
+      return response.status(401).json({ error: 'token invalid' })
+    }
+    console.log("Received user with token:", decodedToken);
 
     const blog = new Blog({
       title: body.title,
       author: body.author,
       url: body.url,
       likes: body.likes,
-      user: users._id,
+      user: user._id,
     });
-
     const savedBlog = await blog.save();
-
-    users.blogs = users.blogs.concat(savedBlog._id);
-    await users.save();
-
+    user.blogs = user.blogs.concat(savedBlog._id);
+    await user.save();
     response.status(201).json(savedBlog);
   } catch (error) {
     next(error);
