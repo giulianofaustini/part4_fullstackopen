@@ -5,7 +5,6 @@ const User = require("../models/user");
 const { usersInDb } = require("../tests/test_helper");
 const jwt = require('jsonwebtoken')
 
-
 usersRouter.get("/", async (request, response) => {
   const users = await User.find({});
   response.json(users);
@@ -31,11 +30,10 @@ blogsRouter.get("/", async (request, response) => {
 //   return null
 // }
 
+
 blogsRouter.post("/", async (request, response, next) => {
   const { body } = request;
   console.log("Received POST request with body:", body);
-  
- 
   if (!body.title || !body.url) {
     return response.status(400).json({ error: "Title and URL are required" });
   }
@@ -46,8 +44,6 @@ blogsRouter.post("/", async (request, response, next) => {
     // const decodedToken = jwt.verify(getTokenFrom(request), process.env.SECRET)
     const decodedToken = jwt.verify(request.token, process.env.SECRET)
     const user = await User.findById(decodedToken.id)
-    
-
     if (!user || user.length === 0) {
       return response
         .status(404)
@@ -57,7 +53,6 @@ blogsRouter.post("/", async (request, response, next) => {
       return response.status(401).json({ error: 'token invalid' })
     }
     console.log("Received user with token:", decodedToken);
-
     const blog = new Blog({
       title: body.title,
       author: body.author,
@@ -76,6 +71,17 @@ blogsRouter.post("/", async (request, response, next) => {
 
 blogsRouter.delete("/:id", async (request, response, next) => {
   try {
+    const decodedToken = jwt.verify(request.token, process.env.SECRET)
+    if (!decodedToken.id) {
+      return response.status(401).json({ error: 'token invalid' })
+    }
+    const blog = await Blog.findById(request.params.id)
+    if (!blog) {
+      return response.status(404).json({ error: "Blog not found" });
+    }
+    if(blog.user.toString() !== decodedToken.id) {
+      return response.status(403).json({ error: "Permission denied" });
+    }
     await Blog.findByIdAndRemove(request.params.id);
     response.status(204).end();
   } catch (error) {
@@ -122,3 +128,4 @@ blogsRouter.put("/:id", async (request, response, next) => {
 });
 
 module.exports = blogsRouter;
+

@@ -3,10 +3,9 @@ Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlN1cGVyIE1hcmlvIiwiaWQiOiI2NTBmZDVlMGQyOGY3NDJiODAzODZiNmEiLCJpYXQiOjE2OTU1MzY3NjZ9.2s8rtUzkm-LJPTPj2R7COrkkRTHXdPDE1cxe9bcjFV4
 
 {
-"title": "The SECONDDDDDDDD with TOKEN",
+"title": "The BLOG SOO TO BE DELETED with TOKEN",
 "author": "SUPER IO",
-"url": "www.TOEKN.com",
-"likes": 12
+"url": "www.TOEKN.com"
 
 }
 
