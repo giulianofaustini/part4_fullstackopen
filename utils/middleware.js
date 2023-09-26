@@ -1,8 +1,14 @@
+
+const User = require('../models/user')
 const logger = require('./logger')
+const jwt = require('jsonwebtoken');
+
+
 
 const requestLogger = (request, response, next) => {
   logger.info('Method:', request.method)
   logger.info('Path:  ', request.path)
+  logger.info('Token: ', request.token)
   logger.info('Body:  ', request.body)
   logger.info('---')
   next()
@@ -26,19 +32,54 @@ const errorHandler = (error, request, response, next) => {
 }
 
 const tokenExtractor = (request, response, next) => {
-  const authorization = request.get('authorization')
+  const authorization = request.get('authorization');
   if (authorization && authorization.startsWith('Bearer ')) {
-    request.token = authorization.replace('Bearer ', '')
+    request.token = authorization.replace('Bearer ', '');
   } else {
-    request.token = null
+    request.token = null;
   }
-  next()
-}
+  next(); 
+};
 
+console.log('i am in between middleware')
 
+const userExtractor = async (request, response, next) => {
+  const token = request.token;
+  console.log('i am the token in the  middelware' , token)
+
+  if (!token) {
+    console.log('No token found');
+    return next();
+  }
+  try {
+
+    const decodedToken = jwt.verify(token, process.env.SECRET);
+
+    if (!decodedToken.id) {
+      console.log('Token is missing user information');
+      return response.status(401).json({ error: 'Token is missing user information' });
+    }
+
+    const user = await User.findById(decodedToken.id);
+
+    if (!user) {
+      console.log('User not found');
+      return response.status(401).json({ error: 'User not found' });
+    }
+
+    request.user = user;
+    console.log('User extracted:', request.user);
+    next();
+  } catch (error) {
+    next(error);
+  }
+};
+
+ 
 module.exports = {
   requestLogger,
   unknownEndpoint,
   errorHandler,
-  tokenExtractor
+  tokenExtractor,
+  userExtractor,
 }
