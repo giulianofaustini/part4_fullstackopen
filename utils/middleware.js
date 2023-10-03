@@ -41,14 +41,13 @@ const tokenExtractor = (request, response, next) => {
   next(); 
 };
 
-console.log('i am in between middleware')
 
 const userExtractor = async (request, response, next) => {
   const token = request.token;
-  console.log('i am the token in the  middelware' , token)
+  console.log('i am the token in the backend middelware' , token)
 
   if (!token) {
-    console.log('No token found');
+    console.log('If I send a delete request from the frontend, No token found');
     return next();
   }
   try {

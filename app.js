@@ -13,6 +13,7 @@ const loginRouter = require('./controllers/login')
 app.use(express.json())
 
 
+
 mongoose.set('strictQuery', false);
 
 logger.info('connecting to', config.MONGODB_URI);

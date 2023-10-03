@@ -1,13 +1,11 @@
-const blogsRouter = require("express").Router();
-const Blog = require("../models/blog");
-const usersRouter = require("../controllers/users");
-const User = require("../models/user");
+const blogsRouter = require('express').Router();
+const Blog = require('../models/blog');
+const User = require('../models/user');
+const jwt = require('jsonwebtoken');
 
-const jwt = require("jsonwebtoken");
-
-blogsRouter.get("/", async (request, response, next) => {
+blogsRouter.get('/', async (request, response, next) => {
   try {
-    const blogs = await Blog.find({}).populate("user", {
+    const blogs = await Blog.find({}).populate('user', {
       username: 1,
       name: 1,
     });
@@ -16,32 +14,31 @@ blogsRouter.get("/", async (request, response, next) => {
     next(error);
   }
 });
-blogsRouter.post("/", async (request, response, next) => {
+
+blogsRouter.post('/', async (request, response, next) => {
   const { body } = request;
 
-  console.log("Received POST request with body:", body);
+  console.log('Received POST request with body:', body);
 
   if (!body.title || !body.url) {
-    return response.status(400).json({ error: "Title and URL are required" });
+    return response.status(400).json({ error: 'Title and URL are required' });
   }
   if (!request.token) {
-    return response.status(401).json({ error: "token missing or invalid" });
+    return response.status(401).json({ error: 'Token missing or invalid' });
   }
   if (!body.likes) {
     body.likes = 0;
   }
 
   try {
-    console.log("Token received:", request.token);
+    console.log('Token received:', request.token);
     const decodedToken = jwt.verify(request.token, process.env.SECRET);
 
-    console.log("Decoded token:", decodedToken);
+    console.log('Decoded token:', decodedToken);
     const user = await User.findById(decodedToken.id);
 
     if (!user) {
-      return response
-        .status(404)
-        .json({ error: "No users found in the database" });
+      return response.status(404).json({ error: 'No users found in the database' });
     }
 
     const blog = new Blog({
@@ -60,25 +57,26 @@ blogsRouter.post("/", async (request, response, next) => {
   }
 });
 
-
-blogsRouter.delete("/:id", async (request, response, next) => {
-  const user = request.user;
-  console.log("User before the try/catch:", user);
-
+blogsRouter.delete('/:id', async (request, response, next) => {
   try {
-    console.log("Blog ID:", request.params.id);
+    const user = request.user;
+    console.log('If I try from the frontEnd to delete a blog, this is the User before the try/catch:', user);
+
+    console.log('Blog ID:', request.params.id);
 
     const blog = await Blog.findById(request.params.id);
-    console.log("Blog:", blog);
+    console.log('Blog in delete that return blog:', blog);
 
     if (!blog) {
-      return response.status(404).json({ error: "Blog not found" });
+      return response.status(404).json({ error: 'Blog not found' });
     }
-    console.log("User before the if statemetn:", user);
+    console.log('Here it seems to pass the if !blog statement, and the blog is:', blog);
 
-    if (blog.user.toString() !== user.id.toString()) {
-      return response.status(403).json({ error: "Permission denied" });
+    if (!user || !user.id || !blog.user || blog.user.toString() !== user.id.toString()) {
+      return response.status(403).json({ error: 'Permission denied' });
     }
+
+    console.log('Here it seems to pass the if !blog statement, and the blog is:', user);
 
     await Blog.findByIdAndRemove(request.params.id);
     response.status(204).end();
@@ -87,21 +85,21 @@ blogsRouter.delete("/:id", async (request, response, next) => {
   }
 });
 
-blogsRouter.get("/:id", async (request, response, next) => {
+blogsRouter.get('/:id', async (request, response, next) => {
   try {
     const blog = await Blog.findById(request.params.id);
     if (blog) {
       response.json(blog);
     } else {
       response.status(404).end();
-      console.error("Error fetching person by ID. Insert the right ID number.");
+      console.error('Error fetching person by ID. Insert the right ID number.');
     }
   } catch (error) {
     next(error);
   }
 });
 
-blogsRouter.put("/:id", async (request, response, next) => {
+blogsRouter.put('/:id', async (request, response, next) => {
   const { body } = request;
   const updatedBlog = {
     title: body.title,
@@ -110,15 +108,11 @@ blogsRouter.put("/:id", async (request, response, next) => {
     likes: body.likes,
   };
   try {
-    const updatedBlogDoc = await Blog.findByIdAndUpdate(
-      request.params.id,
-      updatedBlog,
-      { new: true }
-    );
+    const updatedBlogDoc = await Blog.findByIdAndUpdate(request.params.id, updatedBlog, { new: true });
     if (updatedBlogDoc) {
       response.json(updatedBlogDoc);
     } else {
-      response.status(404).json({ error: "Blog not found" });
+      response.status(404).json({ error: 'Blog not found' });
     }
   } catch (error) {
     next(error);
